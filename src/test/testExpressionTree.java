@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package regressaogp;
+package test;
 
 // Java program to construct an expression tree
 import java.util.Stack;
@@ -20,7 +20,7 @@ class Node {
     }
 }
 
-public class ExpressionTree {
+public class testExpressionTree {
 
     // A utility function to check if 'c'
     // is an operator
@@ -88,7 +88,7 @@ public class ExpressionTree {
 
     public static void main(String args[]) {
 
-        ExpressionTree et = new ExpressionTree();
+        testExpressionTree et = new testExpressionTree();
         String postfix = "ab+ef*g*-";
         char[] charArray = postfix.toCharArray();
         Node root = et.constructTree(charArray);
