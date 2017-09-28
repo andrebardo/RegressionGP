@@ -65,9 +65,9 @@ public class Constant implements Function {
         double retVal = expression.getCoefficientsOfNode().get(0);
         String retStr = null;
         if (retVal < 0) {
-            retStr = String.format("(%s)", retVal);
+            retStr = String.format("(%.2f)", retVal);
         } else {
-            retStr = "" + retVal;
+            retStr = String.format("%.2f", retVal);
         }
         return retStr;
     }

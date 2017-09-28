@@ -44,7 +44,7 @@ public class Context {
 
     private int nextRndFunctionIndx = 0;
 
-    public Context(List<? extends Function> functions, Collection<String> variables) {
+    public Context(List<Function> functions, Collection<String> variables) {
         for (Function f : functions) {
             if (f.argumentsCount() == 0) {
                 this.terminalFunctions.add(f);

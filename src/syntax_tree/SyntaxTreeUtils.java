@@ -22,7 +22,6 @@ public class SyntaxTreeUtils {
 
     public static Expression createTree(int depth, Context context) {
         if (depth > 0) {
-
             Function f;
             if (Math.random() >= 0.5) {
                 f = context.getRandomNonTerminalFunction();
@@ -33,21 +32,15 @@ public class SyntaxTreeUtils {
             Expression expr = new Expression(f);
 
             if (f.argumentsCount() > 0) {
-
                 for (int i = 0; i < f.argumentsCount(); i++) {
                     Expression child = createTree(depth - 1, context);
                     expr.addChild(child);
                 }
-
             } else {
-
                 if (f.isVariable()) {
-
                     String varName = context.getRandomVariableName();
                     expr.setVariable(varName);
-
                 }
-
             }
 
             for (int i = 0; i < f.coefficientsCount(); i++) {
@@ -57,15 +50,12 @@ public class SyntaxTreeUtils {
             return expr;
 
         } else {
-
             Function f = context.getRandomTerminalFunction();
             Expression expr = new Expression(f);
 
             if (f.isVariable()) {
-
                 String varName = context.getRandomVariableName();
                 expr.setVariable(varName);
-
             }
 
             for (int i = 0; i < f.coefficientsCount(); i++) {

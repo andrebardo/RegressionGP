@@ -24,7 +24,7 @@ import syntax_tree.Expression;
 import syntax_tree.SyntaxTreeUtils;
 import syntax_tree.functions.Function;
 
-class GPChromosome {
+public class GPChromosome {
 
     private Expression syntaxTree;
 
