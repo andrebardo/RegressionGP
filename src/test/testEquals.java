@@ -46,13 +46,25 @@ public class testEquals {
         add1.addChild(con1);
         add1.addChild(con2);
         System.out.println(add1.print()+" == add2: "+SyntaxTreeUtils.compareExpressions(add1, add2));
-        add2.addChild(con2);
+        add2.addChild(con1);
         add2.addChild(con1);
         System.out.println(add1.print()+" == "+add2.print()+": "+SyntaxTreeUtils.compareExpressions(add1, add2));
         con2.removeCoefficients();
         con2.addCoefficient(2.0);
         System.out.println(add1.print()+" == "+add2.print()+": "+SyntaxTreeUtils.compareExpressions(add1, add2));
         
+        add1.removeChilds();
+        add1.addChild(con1);
+        add1.addChild(var1);
+        System.out.println(add1.print()+" == "+add2.print()+": "+SyntaxTreeUtils.compareExpressions(add1, add2));
+        add2.removeChilds();
+        add2.addChild(var1);
+        add2.addChild(con1);
+        System.out.println(add1.print()+" == "+add2.print()+": "+SyntaxTreeUtils.compareExpressions(add1, add2));
+        add2.removeChilds();
+        add2.addChild(con1);
+        add2.addChild(var1);
+        System.out.println(add1.print()+" == "+add2.print()+": "+SyntaxTreeUtils.compareExpressions(add1, add2));
     }
     
     /*public static boolean compareCoefficients(List<Double> a, List<Double> b){
