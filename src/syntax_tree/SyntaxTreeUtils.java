@@ -120,4 +120,49 @@ public class SyntaxTreeUtils {
 
         return ret;
     }
+    
+    public static boolean compareExpressions(Expression a, Expression b){
+        return  compareFunctions(a.getFunction(), b.getFunction()) &&
+                compareChilds(a.getChilds(), b.getChilds()) &&
+                compareCoefficients(a.getCoefficientsOfNode(), b.getCoefficientsOfNode()) &&
+                compareVariables(a.getVariable(), b.getVariable());
+    }
+    
+    public static boolean compareFunctions(Function a, Function b){
+        return a.getClass().equals(b.getClass());
+    }
+    
+    public static boolean compareCoefficients(List<Double> a, List<Double> b){
+        boolean equals = true;
+        if(a.size() == b.size()){
+            for(int i = 0; i < a.size(); i++){
+                if(a.get(i).doubleValue() != b.get(i).doubleValue())
+                    return false;
+            }
+        } else {
+            return false;
+        }
+        return equals;
+    }
+ 
+    public static boolean compareVariables(String a, String b){
+        if(a == null && b == null)
+            return true;
+        else if(a != null && b != null)
+            return a.compareTo(b) == 0;
+        else return false;
+    }
+    
+    public static boolean compareChilds(List<Expression> a, List<Expression> b){
+        boolean equals = true;
+        if(a.size() == b.size()){
+            for(int i = 0; i < a.size(); i++){
+                if(!compareExpressions(a.get(i), b.get(i)))
+                    return false;
+            }
+        } else {
+            return false;
+        }
+        return equals;
+    }
 }
