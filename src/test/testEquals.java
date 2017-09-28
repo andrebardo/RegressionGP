@@ -65,6 +65,10 @@ public class testEquals {
         add2.addChild(con1);
         add2.addChild(var1);
         System.out.println(add1.print()+" == "+add2.print()+": "+SyntaxTreeUtils.compareExpressions(add1, add2));
+        add2.removeChilds();
+        add2.addChild(con1);
+        add2.addChild(var2);
+        System.out.println(add1.print()+" == "+add2.print()+": "+SyntaxTreeUtils.compareExpressions(add1, add2));
     }
     
     /*public static boolean compareCoefficients(List<Double> a, List<Double> b){
