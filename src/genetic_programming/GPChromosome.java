@@ -68,6 +68,7 @@ public class GPChromosome {
         GPChromosome ret = new GPChromosome(this.context, this.fitnessFunction, this.syntaxTree.clone());
 
         int type = this.random.nextInt(7);
+        //System.out.println("Mutação tipo "+type);
         switch (type) {
             case 0:
                 ret.mutateByRandomChangeOfFunction();
@@ -235,8 +236,13 @@ public class GPChromosome {
 
     public void optimizeTree(int iterations) {
 
-        SyntaxTreeUtils.cutTree(this.syntaxTree, this.context, 6);
+        SyntaxTreeUtils.cutTree(this.syntaxTree, this.context, Configuration.TREE_DEPTH);
         SyntaxTreeUtils.simplifyTree(this.syntaxTree, this.context);
+        
+        if(!SyntaxTreeUtils.hasVariableNode(this.syntaxTree)){
+            this.syntaxTree = SyntaxTreeUtils.createValidTree(Configuration.TREE_DEPTH, context);
+            optimizeTree(0);
+        }
         
         /*
         List<Double> coefficientsOfTree = this.syntaxTree.getCoefficientsOfTree();

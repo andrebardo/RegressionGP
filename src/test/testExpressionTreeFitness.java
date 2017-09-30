@@ -5,6 +5,7 @@
  */
 package test;
 
+import genetic_programming.Configuration;
 import genetic_programming.ExpressionTreeFitness;
 import genetic_programming.GPChromosome;
 import java.util.ArrayList;
@@ -33,38 +34,27 @@ public class testExpressionTreeFitness {
         int treeDepth = 7; // <- Parametro dado no enunciado
         
         DataLoader trainData = new DataLoader(inputSize, idealSize);
-        trainData.load(filename, true); // carrega os dados de treinamento
+        trainData.load(filename, false); // carrega os dados de treinamento
  
-        Context context = buildContext(); // constroi um contexto base
-        Expression exp1 = SyntaxTreeUtils.createTree(treeDepth, context); // gera uma expressao aleatoria
-        Expression exp2 = SyntaxTreeUtils.createTree(treeDepth, context); // gera outra expressao aleatoria
+        Context context = Configuration.buildContext(); // constroi um contexto base
+        Expression exp1 = SyntaxTreeUtils.createValidTree(treeDepth, context); // gera uma expressao aleatoria
+        Expression exp2 = SyntaxTreeUtils.createValidTree(treeDepth, context); // gera outra expressao aleatoria
         System.out.println("Expressão 1 criada: "+exp1.print());
-        System.out.println("Expressão 2 criada: "+exp2.print());
+       // System.out.println("Expressão 2 criada: "+exp2.print());
         
         ExpressionTreeFitness expFitness = new ExpressionTreeFitness(trainData.getData()); // cria a funcao de avaliacao
         double fitness1 = expFitness.fitness(exp1, context); // avalia a expressao 1
         double fitness2 = expFitness.fitness(exp2, context); // avalia a expressao 2
         System.out.println("Fitness 1: "+fitness1);
-        System.out.println("Fitness 2: "+fitness2);
+        //System.out.println("Fitness 2: "+fitness2);
         
         GPChromosome chromo1 = new GPChromosome(context, expFitness, exp1);
         GPChromosome chromo2 = new GPChromosome(context, expFitness, exp2);
-        List<GPChromosome> filhos = chromo1.crossover(chromo2);
-        System.out.println(filhos.size());
+        //List<GPChromosome> filhos = chromo1.crossover(chromo2);
+        
+        //for(int i = 0; i < filhos.size(); i++)
+        //    System.out.println(filhos.get(i).getSyntaxTree().print());
+        chromo1 = chromo1.mutate();
+        System.out.println("Expressão 1 mutação: "+chromo1.getSyntaxTree().print());
     }
-    
-    public static Context buildContext(){
-        ArrayList<String> variables = new ArrayList<>();
-        ArrayList<Function> functions = new ArrayList<>();
-        
-        variables.add("x1");
-        
-        functions.add(new Add());
-        functions.add(new Sub());
-        functions.add(new Constant());
-        functions.add(new Variable());
-        
-        return new Context(functions, variables);
-    }
-    
 }

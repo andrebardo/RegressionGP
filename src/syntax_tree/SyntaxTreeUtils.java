@@ -19,7 +19,15 @@ import java.util.List;
 import syntax_tree.functions.Function;
 
 public class SyntaxTreeUtils {
-
+    
+    public static Expression createValidTree(int depth, Context context){
+        Expression expr;
+        do{
+            expr = createTree(depth, context);
+        }while(!hasVariableNode(expr));
+        return expr;
+    }
+    
     public static Expression createTree(int depth, Context context) {
         if (depth > 0) {
             Function f;
