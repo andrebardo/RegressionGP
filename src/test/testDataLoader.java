@@ -5,14 +5,6 @@
  */
 package test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import org.encog.ml.data.MLDataPair;
-import org.encog.ml.data.basic.BasicMLDataSet;
-import org.encog.util.csv.CSVFormat;
-import org.encog.util.simple.EncogUtility;
 import util.DataLoader;
 
 

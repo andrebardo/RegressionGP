@@ -33,7 +33,7 @@ public class GPChromosome {
     private Fitness fitnessFunction;
 
     private Random random = new Random();
-
+    
     public GPChromosome(Context context, Fitness fitnessFunction, Expression syntaxTree) {
         this.context = context;
         this.fitnessFunction = fitnessFunction;
@@ -272,6 +272,8 @@ public class GPChromosome {
     public Expression getSyntaxTree() {
         return this.syntaxTree;
     }
+    
+    
     /*
     private class CoefficientsChromosome implements Chromosome<CoefficientsChromosome>, Cloneable {
 
@@ -343,4 +345,12 @@ public class GPChromosome {
         }
 
     }*/
+
+    public Fitness getFitnessFunction() {
+        return fitnessFunction;
+    }
+
+    public void setFitnessFunction(Fitness fitnessFunction) {
+        this.fitnessFunction = fitnessFunction;
+    }
 }
