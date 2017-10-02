@@ -16,7 +16,7 @@ import syntax_tree.Expression;
  */
 public class Ln implements Function {
 
-    //private double threshold = 1e-5;
+    private double threshold = 1e-5;
 
     private int coefficientsCount = 0;
 
@@ -59,7 +59,7 @@ public class Ln implements Function {
     public double eval(Expression expression, Context context) {
         List<Expression> childs = expression.getChilds();
         double arg = childs.get(0).eval(context);
-        return Math.log(Math.abs(arg) /*+ this.threshold*/);
+        return Math.log(Math.abs(arg) + this.threshold);
     }
 
     @Override

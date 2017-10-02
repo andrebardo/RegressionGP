@@ -37,7 +37,7 @@ public class main {
         GPChromosome bestChromo = ga.getBestChromo();
         double bestFitness = ga.getBestFit();
         
-        System.out.println("Melhor solução encontrada:\n"+bestChromo.getSyntaxTree().print()+" -> "+bestFitness);
+        System.out.println("Melhor solução encontrada:\n"+bestChromo.getSyntaxTree().print()+" -> "+String.format("%.4f", bestFitness));
     }
     
     public static Context buildContext(){

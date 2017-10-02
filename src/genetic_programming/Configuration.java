@@ -28,7 +28,7 @@ public class Configuration {
     
     public static final int POPULATION_SIZE = 100;
     public static final int TOURNAMENT_SIZE = 2;
-    public static final int ELITISM_SIZE = 0;
+    public static final int ELITISM_SIZE = 1;
     public static final int MAX_GENERATION = 100;
     
     public static final double CROSSING_RATE = 0.90; // Pc
