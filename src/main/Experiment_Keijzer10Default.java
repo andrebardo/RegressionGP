@@ -142,7 +142,7 @@ public class Experiment_Keijzer10Default {
             higherStdDevPerGen.add(MathUtils.stdDev(higherPerGen.get(gen)));
         }
 
-        DataWriter.write(EXPERIMENT_NAME+"_fitness_per_generation",
+        DataWriter.write(EXPERIMENT_NAME+"_data_per_generation",
                 meanBestFitPerGen, bestFitnessStdDevPerGen,
                 meanMeanFitPerGen, meanFitnessStdDevPerGen,
                 meanWorstFitPerGen, worstFitnessStdDevPerGen,
