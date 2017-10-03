@@ -26,20 +26,21 @@ import syntax_tree.functions.Variable;
  */
 public class Configuration {
     
-    public static final int POPULATION_SIZE = 100;
-    public static final int TOURNAMENT_SIZE = 2;
-    public static final int ELITISM_SIZE = 1;
-    public static final int MAX_GENERATION = 100;
+    public static int POPULATION_SIZE = 100;
+    public static int TOURNAMENT_SIZE = 2;
+    public static int ELITISM_SIZE = 1;
+    public static int MAX_GENERATION = 100;
     
-    public static final double CROSSING_RATE = 0.90; // Pc
-    public static final double MUTATION_RATE = 0.10; // Pm
+    public static double CROSSING_RATE = 0.90; // Pc
+    public static double MUTATION_RATE = 0.10; // Pm
     
-    public static final int TREE_DEPTH = 7;
+    public static int TREE_DEPTH = 7;
     
-    public static final String TRAINING_FILE_NAME = "keijzer-7-train";
-    public static final String TESTING_FILE_NAME = "keijzer-7-test";
-    public static final int INPUT_SIZE = 1; // <- Precisa ser configurado
-    public static final int IDEAL_SIZE = 1; // <- Precisa ser configurado
+    public static String TRAINING_FILE_NAME = "keijzer-7-train";
+    public static String TESTING_FILE_NAME = "keijzer-7-test";
+    public static String OUTPUT_DIR_NAME = "output";
+    public static int INPUT_SIZE = 1; // <- Precisa ser configurado
+    public static int IDEAL_SIZE = 1; // <- Precisa ser configurado
     
     public static Context buildContext(){
         ArrayList<String> variables = new ArrayList<>();
