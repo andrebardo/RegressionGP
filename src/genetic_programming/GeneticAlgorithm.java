@@ -31,10 +31,9 @@ public class GeneticAlgorithm {
 
     private HashMap<String, Integer> repeatMap; // map para contar quantos são repetidos
 
-    private ArrayList<Integer> eliteRank;       // ordenação da elite
-    private ArrayList<Double> eliteFitness;     // fitness do conjunto elite
+    //private ArrayList<Integer> eliteRank;       // ordenação da elite
+    //private ArrayList<Double> eliteFitness;     // fitness do conjunto elite
     private ArrayList<GPChromosome> eliteChromo;// conjunto elite
-    
 
     private GPChromosome bestChromo;            // melhor global
     private double bestFit;                     // melhor global
@@ -50,8 +49,8 @@ public class GeneticAlgorithm {
         this.repeatMap = new HashMap<>();
 
         this.eliteChromo = new ArrayList<>();
-        this.eliteFitness = new ArrayList<>();  
-        this.eliteRank = new ArrayList<>();
+        //this.eliteFitness = new ArrayList<>();  
+        //this.eliteRank = new ArrayList<>();
 
         this.bestFit = Double.MAX_VALUE;
     }
@@ -60,20 +59,22 @@ public class GeneticAlgorithm {
 
         ArrayList<GPChromosome> newPop = (ArrayList<GPChromosome>) createInitialPopulation(context, fitnessFunction);
         bestChromo = newPop.get(0);
-
+        System.out.println("\nGeração aleatória inicial:");
+        evaluate(newPop, print); // primeira avaliação ocorre fora do loop
+        
         for (int generation = 0; generation < Configuration.MAX_GENERATION; generation++) {
-            ArrayList<Double> fitness = (ArrayList<Double>) evaluate(newPop);
-
-            if(print) System.out.println("\nGeração " + generation + " de " + Configuration.MAX_GENERATION + ":");
-            if(print) print(newPop, fitness, generation);
-            if(print) System.out.println("\nElite " + generation + ":");
-            if(print) print(eliteChromo, eliteFitness, generation);
-            statistics(generation, fitness, print);
-
-            ArrayList<GPChromosome> selectedPop = (ArrayList<GPChromosome>) tournamentSelection(newPop, fitness);
-            ArrayList<GPChromosome> crossingPop = (ArrayList<GPChromosome>) crossover(selectedPop);
-            ArrayList<GPChromosome> mutationPop = (ArrayList<GPChromosome>) mutation(crossingPop);
-            newPop = (ArrayList<GPChromosome>) replacement(newPop, mutationPop);
+            //ArrayList<Double> fitness = (ArrayList<Double>) evaluate(newPop);
+            if (print) {
+                System.out.println("\nGeração " + generation + " de " + Configuration.MAX_GENERATION + ":");
+                //print(newPop, generation);
+            }
+            ArrayList<GPChromosome> selectedPop = (ArrayList<GPChromosome>) tournamentSelection(newPop); // seleção
+            ArrayList<GPChromosome> crossingPop = (ArrayList<GPChromosome>) crossover(selectedPop); // cruzamento
+            ArrayList<GPChromosome> mutationPop = (ArrayList<GPChromosome>) mutation(crossingPop); // mutação
+            evaluate(mutationPop, print); // avaliaçao
+            elitism(newPop, print, generation); // elitismo (configura conjunto elite)
+            newPop = (ArrayList<GPChromosome>) replacement(selectedPop, mutationPop, print); // substituição
+            statistics(generation, newPop, print);
         }
     }
 
@@ -87,23 +88,21 @@ public class GeneticAlgorithm {
         return population;
     }
 
-    private List<Double> evaluate(List<GPChromosome> population) {
-        double bestFit = Double.MAX_VALUE;
+    private void/*List<Double>*/ evaluate(List<GPChromosome> population, boolean print) {
+        double localBest = Double.MAX_VALUE;
         double worstFit = 0;
         double mean = 0;
 
-        eliteChromo.clear();
+        /*eliteChromo.clear();
         eliteFitness.clear();
         double eliteThreshold = Double.MAX_VALUE; // valor de controle de entrada na elite
         eliteRank.clear();
         for (int idx = 0; idx < Configuration.ELITISM_SIZE; idx++) {
             eliteRank.add(idx);
-        }
-        
+        }*/
         repeatMap = new HashMap<>();
 
-        ArrayList<Double> fitness = new ArrayList<>();
-
+        //ArrayList<Double> fitness = new ArrayList<>();
         for (int i = 0; i < population.size(); i++) {
             GPChromosome chromo = population.get(i);
             Fitness function = chromo.getFitnessFunction();
@@ -118,7 +117,11 @@ public class GeneticAlgorithm {
                 tree = chromo.getSyntaxTree();
                 value = function.fitness(tree, context);
             }
-            fitness.add(value);
+            chromo.setFitnessValue(value);
+            if(print){
+                System.out.println(i + " -> " + population.get(i).getSyntaxTree().print() + " -> " + String.format("%.4f", population.get(i).getFitnessValue()));
+            }
+            //fitness.add(value);
 
             // Calcula o número de individuos repetidos
             if (repeatMap.containsKey(chromo.getSyntaxTree().print())) {
@@ -126,25 +129,23 @@ public class GeneticAlgorithm {
             } else {
                 repeatMap.put(chromo.getSyntaxTree().print(), 1);
             }
-
-            if (value < bestFit) {
-                bestFit = value;
-                if (value < this.bestFit) {
-                    bestChromo = new GPChromosome(chromo.getContext(),
+            
+            if (value < localBest) {
+                localBest = value;
+                if (value < this.bestFit) { // melhor geral
+                    this.bestChromo = new GPChromosome(
+                            chromo.getContext(),
                             chromo.getFitnessFunction(),
-                            chromo.getSyntaxTree().clone());
+                            chromo.getSyntaxTree().clone(),
+                            value);
                     this.bestFit = value;
                 }
             }
+            mean += value / (double) population.size();
             if (value > worstFit) {
                 worstFit = value;
             }
-            mean += value;
-
-            // só há necessidade de tratar o conjunto elite se ele for maior que 1
-            // caso contrário, já se tem bestFit e bestChromo
-            // OBSERVAÇÃO: o Elitismo está com problemas porque o método Collections.sort não funciona corretamente
-            if (Configuration.ELITISM_SIZE > 1) {
+            /*if (Configuration.ELITISM_SIZE > 1) {
                 Comparator<Integer> comparator = new Comparator<Integer>() {
                     @Override
                     public int compare(Integer t1, Integer t2) {
@@ -170,38 +171,13 @@ public class GeneticAlgorithm {
                         eliteThreshold = eliteFitness.get(getIndexOfMax(eliteRank)); 
                     }
                 }
-            }
+            }*/
         }
-        bestFitness.add(bestFit);
-        mean = mean / (double) population.size();
-        meanFitness.add(mean);
+        bestFitness.add(localBest); 
         worstFitness.add(worstFit);
-        return fitness;
-    }
-
-    /*// JAVA 8 only
-    public static <K extends Comparable <? super K>> int[] sortedPermutation(final List<K> items) {
-    return IntStream.range(0, items.size())
-            .mapToObj(value -> Integer.valueOf(value))
-            .sorted((i1, i2) -> items.get(i1).compareTo(items.get(i2)))
-            .mapToInt(value -> value.intValue())
-            .toArray();
-    }*/
-    
-    private int getIndexOfMax(ArrayList<Integer> array) {
-        if (array.size() == 0) {
-            return -1; // array contains no elements
-        }
-        int max = array.get(0);
-        int pos = 0;
-
-        for (int i = 1; i < array.size(); i++) {
-            if (max < array.get(i)) {
-                pos = i;
-                max = array.get(i);
-            }
-        }
-        return pos;
+        meanFitness.add(mean);
+        System.out.println(String.format("Melhor Fitness: %.4f \nAvg Fitness: %.4f \nPior Fitness: %.4f", localBest, mean, worstFit));
+        //return fitness;
     }
 
     private GPChromosome refinement(GPChromosome chromo, double value) {
@@ -215,21 +191,45 @@ public class GeneticAlgorithm {
         return chromo;
     }
 
-    private List<GPChromosome> tournamentSelection(List<GPChromosome> population, List<Double> fitness) {
+    // só há necessidade de tratar o conjunto elite se ele for maior que 1
+    // caso contrário, já se tem bestFit e bestChromo
+    private void elitism(List<GPChromosome> population, boolean print, int gen) {
+        if (Configuration.ELITISM_SIZE > 1) {
+            Collections.sort(population); // ordena a população 
+            eliteChromo.clear();
+            for (int i = 0; i < Configuration.ELITISM_SIZE; i++) {
+                eliteChromo.add(population.get(i));
+            }
+            if (print) {
+                System.out.println("\nElite " + gen + ":");
+                print(eliteChromo, /*eliteFitness,*/ gen);
+            }
+        }
+    }
+    
+    private GPChromosome cloneChromosome(GPChromosome chromo){
+        return new GPChromosome(
+                chromo.getContext(),
+                chromo.getFitnessFunction(),
+                chromo.getSyntaxTree().clone(),
+                chromo.getFitnessValue());
+    }
+
+    private List<GPChromosome> tournamentSelection(List<GPChromosome> population/*, List<Double> fitness*/) {
         ArrayList<GPChromosome> selected = new ArrayList<>(Configuration.POPULATION_SIZE);
         Random random = new Random(System.currentTimeMillis());
 
         while (selected.size() < Configuration.POPULATION_SIZE) {
 
             int index = random.nextInt(Configuration.POPULATION_SIZE);
-            GPChromosome winner = population.get(index);
-            double best = fitness.get(index);
+            GPChromosome winner = cloneChromosome(population.get(index));
+            double best = population.get(index).getFitnessValue();
 
             for (int i = 1; i < Configuration.TOURNAMENT_SIZE; i++) {
                 index = random.nextInt(Configuration.POPULATION_SIZE);
-                if (fitness.get(index) < best) {
-                    winner = population.get(index);
-                    best = fitness.get(index);
+                if (population.get(index).getFitnessValue() < best) {
+                    winner = cloneChromosome(population.get(index));
+                    best = population.get(index).getFitnessValue();
                 }
             }
             selected.add(winner);
@@ -261,16 +261,18 @@ public class GeneticAlgorithm {
 
             if (random.nextDouble() <= Configuration.MUTATION_RATE) {
                 //System.out.print("\nMutation at "+i);
-                mutants.add(population.get(i).mutate());
+                mutants.add(cloneChromosome(population.get(i).mutate()));
             } else {
-                mutants.add(population.get(i));
+                mutants.add(cloneChromosome(population.get(i)));
             }
         }
         return mutants;
     }
 
-    private void statistics(int gen, ArrayList<Double> fitness, boolean print) {
-        if(print) System.out.println("\nEstatísticas "+gen);
+    private void statistics(int gen, ArrayList<GPChromosome> pop, boolean print) {
+        if (print) {
+            System.out.println("\nEstatísticas " + gen);
+        }
         int repeat = 0;
         for (Entry<String, Integer> entry : repeatMap.entrySet()) {
             if (entry.getValue() > 1) {
@@ -278,29 +280,32 @@ public class GeneticAlgorithm {
             }
         }
         double percent = 100 * repeat / (double) Configuration.POPULATION_SIZE;
-        if(print) System.out.println("Percentual de indivíduos repetidos: " + String.format("%.2f%%", percent));
         this.repeatPerGen.add(percent);
-        
-        if(print) System.out.println("Melhor fitness:  " + String.format("%.4f", this.bestFitness.get(gen)));
-        if(print) System.out.println("Pior fitness:    " + String.format("%.4f", this.worstFitness.get(gen)));
-        if(print) System.out.println("Média dos atual: " + String.format("%.4f", this.meanFitness.get(gen)));
+        if (print) {
+            System.out.println("Percentual de indivíduos repetidos: " + String.format("%.2f%%", percent));
+            System.out.println("Melhor fitness:   " + String.format("%.4f", this.bestFitness.get(gen)));
+            System.out.println("Pior fitness:     " + String.format("%.4f", this.worstFitness.get(gen)));
+            System.out.println("Média dos filhos: " + String.format("%.4f", this.meanFitness.get(gen)));
+        }
         if (gen > 0) {
             // o enunciado pede para comparar com os pais
             // nesse caso é preciso comparar com a geração anterior
             double mean = this.meanFitness.get(gen - 1);
             int low = 0, high = 0;
-            for (int i = 0; i < fitness.size(); i++) {
-                if (fitness.get(i) < mean) {
+            for (int i = 0; i < pop.size(); i++) {
+                if (pop.get(i).getFitnessValue() < mean) {
                     low++;
-                } else if (fitness.get(i) > mean) {
+                } else if (pop.get(i).getFitnessValue() > mean) {
                     high++;
                 }
             }
             double highPercent = 100 * high / (double) Configuration.POPULATION_SIZE;
             double lowPercent = 100 * low / (double) Configuration.POPULATION_SIZE;
-            if(print) System.out.println("Média dos pais:  " + String.format("%.4f", mean));
-            if(print) System.out.println("Percentual de indivíduos melhores que a média dos pais: " + String.format("%.2f%%", lowPercent));
-            if(print) System.out.println("Percentual de indivíduos piores que a média dos pais: " + String.format("%.2f%%", highPercent));
+            if (print) {
+                System.out.println("Média dos pais:  " + String.format("%.4f", mean));
+                System.out.println("Percentual de indivíduos melhores que a média dos pais: " + String.format("%.2f%%", lowPercent));
+                System.out.println("Percentual de indivíduos piores que a média dos pais: " + String.format("%.2f%%", highPercent));
+            }
             this.lowFitPercent.add(lowPercent);
             this.highFitPercent.add(highPercent);
         } else {
@@ -309,12 +314,27 @@ public class GeneticAlgorithm {
         }
     }
 
-    private List<GPChromosome> replacement(List<GPChromosome> oldPop, List<GPChromosome> newPop) {
+    private List<GPChromosome> replacement(List<GPChromosome> fathers, List<GPChromosome> sons, boolean print) {
         ArrayList<GPChromosome> nextGeneration = new ArrayList<>(Configuration.POPULATION_SIZE);
         Random random = new Random(System.currentTimeMillis());
         // 100% replacement
-        nextGeneration = (ArrayList<GPChromosome>) newPop;
-
+        //nextGeneration = (ArrayList<GPChromosome>) newPop;
+        
+        // Tolerance Based Replacement
+        double percentOfSons = 0;
+        for(int i = 0; i < fathers.size(); i++){
+            // se o fitness do filho por pior que 1.5x o pai, o filho é rejeitado
+            if(sons.get(i).getFitnessValue() <= (fathers.get(i).getFitnessValue() * Configuration.TOLERANCE)){
+                nextGeneration.add(cloneChromosome(sons.get(i)));
+                percentOfSons++;
+            }
+            else
+                nextGeneration.add(cloneChromosome(fathers.get(i)));
+        }
+        percentOfSons = 100 * percentOfSons / (double) fathers.size();
+        if(print) System.out.println("Filhos Fisicamente Removidos: "+String.format("%.2f%%", (100-percentOfSons)));
+        
+        // Elite Replacement
         if (Configuration.ELITISM_SIZE == 1) {
             nextGeneration.remove(random.nextInt(nextGeneration.size()));
             nextGeneration.add(bestChromo);
@@ -331,10 +351,10 @@ public class GeneticAlgorithm {
         return nextGeneration;
     }
 
-    private void print(List<GPChromosome> pop, List<Double> fitness, int gen) {
+    private void print(List<GPChromosome> pop, /*List<Double> fitness,*/ int gen) {
         //
         for (int i = 0; i < pop.size(); i++) {
-            System.out.println(i + " -> " + pop.get(i).getSyntaxTree().print() + " -> " + String.format("%.4f", fitness.get(i)));
+            System.out.println(i + " -> " + pop.get(i).getSyntaxTree().print() + " -> " + String.format("%.4f", pop.get(i).getFitnessValue()));
         }
         //double curGenBest = bestFitness.get(gen);
         //System.out.println("Overall Best: "+bestChromo.getSyntaxTree().print()+" -> "+bestFit+ " (Current Generation best -> "+curGenBest+")");

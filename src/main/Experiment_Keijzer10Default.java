@@ -9,7 +9,6 @@ import genetic_programming.Configuration;
 import genetic_programming.ExpressionTreeFitness;
 import genetic_programming.GeneticAlgorithm;
 import java.util.ArrayList;
-import java.util.List;
 import syntax_tree.Context;
 import util.DataLoader;
 import util.DataWriter;
@@ -23,6 +22,7 @@ public class Experiment_Keijzer10Default {
 
     private static final int NUM_EXEC = 30;
     private static final String EXPERIMENT_NAME = "keijzer-10_default";
+    private static final boolean VERBOSE = true; // print?
     
     private static void setupExperiment(){
         Configuration.POPULATION_SIZE = 100;
@@ -62,7 +62,7 @@ public class Experiment_Keijzer10Default {
             System.out.println("Exec " + (i + 1) + "/" + (NUM_EXEC));
             GeneticAlgorithm ga = new GeneticAlgorithm();
 
-            ga.evolve(context, expFitness, false);
+            ga.evolve(context, expFitness, VERBOSE);
 
             listOfBestFitness.add(ga.getBestFitness());
             listOfMeanFitness.add(ga.getMeanFitness());

@@ -24,7 +24,7 @@ import syntax_tree.Expression;
 import syntax_tree.SyntaxTreeUtils;
 import syntax_tree.functions.Function;
 
-public class GPChromosome {
+public class GPChromosome implements Comparable{
 
     private Expression syntaxTree;
 
@@ -34,10 +34,18 @@ public class GPChromosome {
 
     private Random random = new Random();
     
+    private double fitnessValue;
+    
     public GPChromosome(Context context, Fitness fitnessFunction, Expression syntaxTree) {
         this.context = context;
         this.fitnessFunction = fitnessFunction;
         this.syntaxTree = syntaxTree;
+        this.fitnessValue = Double.MAX_VALUE;
+    }
+    
+    public GPChromosome(Context context, Fitness fitnessFunction, Expression syntaxTree, double value) {
+        this(context, fitnessFunction, syntaxTree);
+        this.fitnessValue = value;
     }
 
     public List<GPChromosome> crossover(GPChromosome anotherChromosome) {
@@ -86,7 +94,7 @@ public class GPChromosome {
                 ret.mutateByRootGrowth();
                 break;
             case 5:
-                ret.syntaxTree = SyntaxTreeUtils.createTree(2, this.context);
+                ret.syntaxTree = SyntaxTreeUtils.createValidTree(Configuration.TREE_DEPTH, this.context);
                 break;
             case 6:
                 ret.mutateByReplaceEntireTreeWithAnySubTree();
@@ -358,5 +366,19 @@ public class GPChromosome {
 
     public void setFitnessFunction(Fitness fitnessFunction) {
         this.fitnessFunction = fitnessFunction;
+    }
+
+    public double getFitnessValue() {
+        return fitnessValue;
+    }
+
+    public void setFitnessValue(double fitnessValue) {
+        this.fitnessValue = fitnessValue;
+    }
+
+    @Override
+    public int compareTo(Object t) {
+        GPChromosome comp = (GPChromosome) t;
+        return Double.compare(this.fitnessValue, comp.getFitnessValue());
     }
 }

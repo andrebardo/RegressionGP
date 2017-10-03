@@ -33,6 +33,7 @@ public class Configuration {
     
     public static double CROSSING_RATE = 0.90; // Pc
     public static double MUTATION_RATE = 0.10; // Pm
+    public static double TOLERANCE = 1.50; // criterio de tolerancia de filhos ruins
     
     public static int TREE_DEPTH = 7;
     

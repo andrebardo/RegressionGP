@@ -9,7 +9,6 @@ import genetic_programming.Configuration;
 import genetic_programming.ExpressionTreeFitness;
 import genetic_programming.GeneticAlgorithm;
 import java.util.ArrayList;
-import java.util.List;
 import syntax_tree.Context;
 import util.DataLoader;
 import util.DataWriter;
@@ -21,13 +20,14 @@ import util.MathUtils;
  */
 public class Experiment_HouseDefault {
 
-    private static final int NUM_EXEC = 30;
+    private static final int NUM_EXEC = 3;
     private static final String EXPERIMENT_NAME = "house_default";
+    private static final boolean VERBOSE = true; // print?
     
     private static void setupExperiment(){
         Configuration.POPULATION_SIZE = 100;
         Configuration.TOURNAMENT_SIZE = 2;
-        Configuration.ELITISM_SIZE = 0;
+        Configuration.ELITISM_SIZE = 5;
         Configuration.MAX_GENERATION = 100;
 
         Configuration.CROSSING_RATE = 0.90; // Pc
@@ -62,7 +62,7 @@ public class Experiment_HouseDefault {
             System.out.println("Exec " + (i + 1) + "/" + (NUM_EXEC));
             GeneticAlgorithm ga = new GeneticAlgorithm();
 
-            ga.evolve(context, expFitness, false);
+            ga.evolve(context, expFitness, VERBOSE);
 
             listOfBestFitness.add(ga.getBestFitness());
             listOfMeanFitness.add(ga.getMeanFitness());
