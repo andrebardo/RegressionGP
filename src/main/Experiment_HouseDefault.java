@@ -20,9 +20,9 @@ import util.MathUtils;
  */
 public class Experiment_HouseDefault {
 
-    private static final int NUM_EXEC = 3;
+    private static final int NUM_EXEC = 30;
     private static final String EXPERIMENT_NAME = "house_default";
-    private static final boolean VERBOSE = true; // print?
+    private static final boolean VERBOSE = false; // print?
     
     private static void setupExperiment(){
         Configuration.POPULATION_SIZE = 100;
@@ -31,7 +31,8 @@ public class Experiment_HouseDefault {
         Configuration.MAX_GENERATION = 100;
 
         Configuration.CROSSING_RATE = 0.90; // Pc
-        Configuration.MUTATION_RATE = 0.05; // Pm
+        Configuration.MUTATION_RATE = 0.10; // Pm
+        Configuration.TOLERANCE = 2.0;
 
         Configuration.TREE_DEPTH = 7;
 

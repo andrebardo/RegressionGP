@@ -80,8 +80,13 @@ public class GeneticAlgorithm {
     private List<GPChromosome> createInitialPopulation(Context context, Fitness expFitness) {
         ArrayList<GPChromosome> population = new ArrayList<>();
         for (int i = 0; i < Configuration.POPULATION_SIZE; i++) {
-            Expression exp = SyntaxTreeUtils.createValidTree(Configuration.TREE_DEPTH, context);
-            GPChromosome chromo = new GPChromosome(context, expFitness, exp);
+            GPChromosome chromo = null;
+            
+            do{ // garante que a população inicial seja formada por indivíduos 100% distintos
+                Expression exp = SyntaxTreeUtils.createValidTree(Configuration.TREE_DEPTH, context);
+                chromo = new GPChromosome(context, expFitness, exp);
+            }while(population.contains(chromo));
+            
             population.add(chromo);
         }
         return population;
@@ -240,9 +245,7 @@ public class GeneticAlgorithm {
         
         int repeat = 0;
         for (Entry<String, Integer> entry : repeatMap.entrySet()) {
-            if (entry.getValue() > 1) {
-                repeat++;
-            }
+            repeat++;
         }
         double percent = 100 * repeat / (double) Configuration.POPULATION_SIZE;
         this.repeatPerGen.add(percent);
@@ -250,26 +253,31 @@ public class GeneticAlgorithm {
             System.out.println("Percentual de diversidade: " + String.format("%.2f%%", percent));
             System.out.println("Melhor fitness:   " + String.format("%.4f", this.bestFitness.get(gen)));
             System.out.println("Pior fitness:     " + String.format("%.4f", this.worstFitness.get(gen)));
-            System.out.println("Média dos filhos: " + String.format("%.4f", this.meanFitness.get(gen)));
+            System.out.println("Média dos filhos: " + String.format("%f", this.meanFitness.get(gen)));
         }
         if (gen > 0) {
             // o enunciado pede para comparar com os pais
             // nesse caso é preciso comparar com a geração anterior
             double meanFather = this.meanFitness.get(gen - 1);
-            int low = 0, high = 0;
+            int low = 0, high = 0, equal = 0;
+            double error = 1e-5;
             for (int i = 0; i < pop.size(); i++) {
-                if (pop.get(i).getFitnessValue() < meanFather) {
+                
+                if(pop.get(i).getFitnessValue() >= (meanFather-error) && pop.get(i).getFitnessValue() <= (meanFather+error)){
+                    equal++;
+                }
+                else if (pop.get(i).getFitnessValue() < (meanFather-error)) {
                     low++;
-                } else if (pop.get(i).getFitnessValue() > meanFather) {
+                } else if (pop.get(i).getFitnessValue() > (meanFather+error)) {
                     high++;
                 }
             }
-            double highPercent = 100 * high / (double) Configuration.POPULATION_SIZE;
-            double lowPercent = 100 * low / (double) Configuration.POPULATION_SIZE;
+            double highPercent = 100 * high / (double) pop.size();
+            double lowPercent = 100 * low / (double) pop.size();
             if (print) {
-                System.out.println("Média dos pais:  " + String.format("%.4f", meanFather));
-                System.out.println("Percentual de indivíduos melhores que a média dos pais: " + String.format("%.2f%%", lowPercent));
-                System.out.println("Percentual de indivíduos piores que a média dos pais: " + String.format("%.2f%%", highPercent));
+                System.out.println("Média dos pais:  " + String.format("%f", meanFather));
+                System.out.println("Percentual de indivíduos melhores que a média dos pais: " + String.format("%.2f%% (%d)", lowPercent, low));
+                System.out.println("Percentual de indivíduos piores que a média dos pais: " + String.format("%.2f%% (%d)", highPercent, high));
             }
             this.lowFitPercent.add(lowPercent);
             this.highFitPercent.add(highPercent);

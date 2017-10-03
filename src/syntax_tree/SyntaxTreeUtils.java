@@ -15,6 +15,7 @@
  ***************************************************************************** */
 package syntax_tree;
 
+import genetic_programming.Configuration;
 import java.util.List;
 import syntax_tree.functions.Function;
 
@@ -29,9 +30,10 @@ public class SyntaxTreeUtils {
     }
     
     public static Expression createTree(int depth, Context context) {
+        double prob = 1 - ((double)depth/(double)Configuration.TREE_DEPTH);
         if (depth > 0) {
             Function f;
-            if (Math.random() >= 0.5) {
+            if (Math.random() >= prob) {
                 f = context.getRandomNonTerminalFunction();
             } else {
                 f = context.getRandomTerminalFunction();

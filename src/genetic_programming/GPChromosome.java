@@ -47,6 +47,12 @@ public class GPChromosome implements Comparable{
         this(context, fitnessFunction, syntaxTree);
         this.fitnessValue = value;
     }
+    
+    @Override
+    public boolean equals(Object o){
+        GPChromosome comp = (GPChromosome) o;
+        return SyntaxTreeUtils.compareExpressions(this.syntaxTree, comp.getSyntaxTree());
+    }
 
     public List<GPChromosome> crossover(GPChromosome anotherChromosome) {
         List<GPChromosome> ret = new ArrayList<GPChromosome>(2);
