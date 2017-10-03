@@ -19,15 +19,15 @@ import util.MathUtils;
  *
  * @author Kurumin
  */
-public class Experiment_ONE {
+public class Experiment_HouseDefault {
 
     private static final int NUM_EXEC = 30;
-    private static final String EXPERIMENT_NAME = "ONE";
+    private static final String EXPERIMENT_NAME = "house_default";
     
     private static void setupExperiment(){
         Configuration.POPULATION_SIZE = 100;
         Configuration.TOURNAMENT_SIZE = 2;
-        Configuration.ELITISM_SIZE = 1;
+        Configuration.ELITISM_SIZE = 0;
         Configuration.MAX_GENERATION = 100;
 
         Configuration.CROSSING_RATE = 0.90; // Pc
@@ -35,10 +35,10 @@ public class Experiment_ONE {
 
         Configuration.TREE_DEPTH = 7;
 
-        Configuration.TRAINING_FILE_NAME = "keijzer-7-train";
-        Configuration.TESTING_FILE_NAME = "keijzer-7-test";
+        Configuration.TRAINING_FILE_NAME = "house-train";
+        Configuration.TESTING_FILE_NAME = "house-test";
         Configuration.OUTPUT_DIR_NAME = "output";
-        Configuration.INPUT_SIZE = 1; // <- Precisa ser configurado
+        Configuration.INPUT_SIZE = 8; // <- Precisa ser configurado
         Configuration.IDEAL_SIZE = 1; // <- Precisa ser configurado
     }
 
@@ -142,7 +142,7 @@ public class Experiment_ONE {
             higherStdDevPerGen.add(MathUtils.stdDev(higherPerGen.get(gen)));
         }
 
-        DataWriter.write(EXPERIMENT_NAME+"_fitness_per_generation",
+        DataWriter.write(EXPERIMENT_NAME+"_data_per_generation",
                 meanBestFitPerGen, bestFitnessStdDevPerGen,
                 meanMeanFitPerGen, meanFitnessStdDevPerGen,
                 meanWorstFitPerGen, worstFitnessStdDevPerGen,
