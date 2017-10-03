@@ -59,7 +59,6 @@ public class GeneticAlgorithm {
 
         ArrayList<GPChromosome> newPop = (ArrayList<GPChromosome>) createInitialPopulation(context, fitnessFunction);
         bestChromo = newPop.get(0);
-        System.out.println("\nGeração aleatória inicial:");
         evaluate(newPop, print); // primeira avaliação ocorre fora do loop
         
         for (int generation = 0; generation < Configuration.MAX_GENERATION; generation++) {
@@ -88,21 +87,8 @@ public class GeneticAlgorithm {
         return population;
     }
 
-    private void/*List<Double>*/ evaluate(List<GPChromosome> population, boolean print) {
-        double localBest = Double.MAX_VALUE;
-        double worstFit = 0;
-        double mean = 0;
-
-        /*eliteChromo.clear();
-        eliteFitness.clear();
-        double eliteThreshold = Double.MAX_VALUE; // valor de controle de entrada na elite
-        eliteRank.clear();
-        for (int idx = 0; idx < Configuration.ELITISM_SIZE; idx++) {
-            eliteRank.add(idx);
-        }*/
-        repeatMap = new HashMap<>();
-
-        //ArrayList<Double> fitness = new ArrayList<>();
+    private void evaluate(List<GPChromosome> population, boolean print) {
+        
         for (int i = 0; i < population.size(); i++) {
             GPChromosome chromo = population.get(i);
             Fitness function = chromo.getFitnessFunction();
@@ -117,67 +103,8 @@ public class GeneticAlgorithm {
                 tree = chromo.getSyntaxTree();
                 value = function.fitness(tree, context);
             }
-            chromo.setFitnessValue(value);
-            if(print){
-                System.out.println(i + " -> " + population.get(i).getSyntaxTree().print() + " -> " + String.format("%.4f", population.get(i).getFitnessValue()));
-            }
-            //fitness.add(value);
-
-            // Calcula o número de individuos repetidos
-            if (repeatMap.containsKey(chromo.getSyntaxTree().print())) {
-                repeatMap.put(chromo.getSyntaxTree().print(), repeatMap.get(chromo.getSyntaxTree().print()) + 1);
-            } else {
-                repeatMap.put(chromo.getSyntaxTree().print(), 1);
-            }
-            
-            if (value < localBest) {
-                localBest = value;
-                if (value < this.bestFit) { // melhor geral
-                    this.bestChromo = new GPChromosome(
-                            chromo.getContext(),
-                            chromo.getFitnessFunction(),
-                            chromo.getSyntaxTree().clone(),
-                            value);
-                    this.bestFit = value;
-                }
-            }
-            mean += value / (double) population.size();
-            if (value > worstFit) {
-                worstFit = value;
-            }
-            /*if (Configuration.ELITISM_SIZE > 1) {
-                Comparator<Integer> comparator = new Comparator<Integer>() {
-                    @Override
-                    public int compare(Integer t1, Integer t2) {
-                        return Double.compare(eliteFitness.get(t1), eliteFitness.get(t2));
-                    }
-                };
-                if (eliteFitness.size() < Configuration.ELITISM_SIZE) {
-                    eliteFitness.add(value);
-                    eliteChromo.add(chromo);
-                    //System.out.println("Elite add: "+chromo.getSyntaxTree().print()+String.format(" -> %.4f", value));
-                    if (eliteFitness.size() == Configuration.ELITISM_SIZE) { 
-                        Collections.sort(eliteRank, comparator);
-                        //int[] rank = sortedPermutation(eliteFitness);
-                        eliteThreshold = eliteFitness.get(getIndexOfMax(eliteRank));
-                        //System.out.println("Elite permu: "+Arrays.toString(eliteRank.toArray()));
-                    }
-                } else {
-                    if (value < eliteThreshold) {
-                        int maxIndex = getIndexOfMax(eliteRank);
-                        eliteFitness.set(maxIndex, value);
-                        eliteChromo.set(maxIndex, chromo);
-                        Collections.sort(eliteRank, comparator);
-                        eliteThreshold = eliteFitness.get(getIndexOfMax(eliteRank)); 
-                    }
-                }
-            }*/
+            chromo.setFitnessValue(value);     
         }
-        bestFitness.add(localBest); 
-        worstFitness.add(worstFit);
-        meanFitness.add(mean);
-        System.out.println(String.format("Melhor Fitness: %.4f \nAvg Fitness: %.4f \nPior Fitness: %.4f", localBest, mean, worstFit));
-        //return fitness;
     }
 
     private GPChromosome refinement(GPChromosome chromo, double value) {
@@ -273,16 +200,54 @@ public class GeneticAlgorithm {
         if (print) {
             System.out.println("\nEstatísticas " + gen);
         }
+        
+        repeatMap = new HashMap<>();
+        double localBest = Double.MAX_VALUE;
+        double worstFit = 0;
+        double mean = 0;
+        
+        for(int i = 0; i < Configuration.POPULATION_SIZE; i++){
+            double value = pop.get(i).getFitnessValue();
+            if (value < localBest) {
+                localBest = value;
+                if (value < this.bestFit) { // melhor geral
+                    this.bestChromo = new GPChromosome(
+                            pop.get(i).getContext(),
+                            pop.get(i).getFitnessFunction(),
+                            pop.get(i).getSyntaxTree().clone(),
+                            value);
+                    this.bestFit = value;
+                }
+            }
+            mean += value / (double) pop.size();
+            if (value > worstFit) {
+                worstFit = value;
+            }
+            // Calcula o número de individuos repetidos
+            if (repeatMap.containsKey(pop.get(i).getSyntaxTree().print())) {
+                repeatMap.put(pop.get(i).getSyntaxTree().print(), repeatMap.get(pop.get(i).getSyntaxTree().print()) + 1);
+            } else {
+                repeatMap.put(pop.get(i).getSyntaxTree().print(), 1);
+            }
+            if(print){
+                System.out.println(i + " -> " + pop.get(i).getSyntaxTree().print() + " -> " + String.format("%.4f", pop.get(i).getFitnessValue()));
+            }
+        }
+        bestFitness.add(localBest); 
+        worstFitness.add(worstFit);
+        meanFitness.add(mean);
+        //System.out.println(String.format("Melhor Fitness: %.4f \nAvg Fitness: %.4f \nPior Fitness: %.4f", localBest, mean, worstFit));
+        
         int repeat = 0;
         for (Entry<String, Integer> entry : repeatMap.entrySet()) {
             if (entry.getValue() > 1) {
-                repeat += entry.getValue();
+                repeat++;
             }
         }
         double percent = 100 * repeat / (double) Configuration.POPULATION_SIZE;
         this.repeatPerGen.add(percent);
         if (print) {
-            System.out.println("Percentual de indivíduos repetidos: " + String.format("%.2f%%", percent));
+            System.out.println("Percentual de diversidade: " + String.format("%.2f%%", percent));
             System.out.println("Melhor fitness:   " + String.format("%.4f", this.bestFitness.get(gen)));
             System.out.println("Pior fitness:     " + String.format("%.4f", this.worstFitness.get(gen)));
             System.out.println("Média dos filhos: " + String.format("%.4f", this.meanFitness.get(gen)));
@@ -290,19 +255,19 @@ public class GeneticAlgorithm {
         if (gen > 0) {
             // o enunciado pede para comparar com os pais
             // nesse caso é preciso comparar com a geração anterior
-            double mean = this.meanFitness.get(gen - 1);
+            double meanFather = this.meanFitness.get(gen - 1);
             int low = 0, high = 0;
             for (int i = 0; i < pop.size(); i++) {
-                if (pop.get(i).getFitnessValue() < mean) {
+                if (pop.get(i).getFitnessValue() < meanFather) {
                     low++;
-                } else if (pop.get(i).getFitnessValue() > mean) {
+                } else if (pop.get(i).getFitnessValue() > meanFather) {
                     high++;
                 }
             }
             double highPercent = 100 * high / (double) Configuration.POPULATION_SIZE;
             double lowPercent = 100 * low / (double) Configuration.POPULATION_SIZE;
             if (print) {
-                System.out.println("Média dos pais:  " + String.format("%.4f", mean));
+                System.out.println("Média dos pais:  " + String.format("%.4f", meanFather));
                 System.out.println("Percentual de indivíduos melhores que a média dos pais: " + String.format("%.2f%%", lowPercent));
                 System.out.println("Percentual de indivíduos piores que a média dos pais: " + String.format("%.2f%%", highPercent));
             }

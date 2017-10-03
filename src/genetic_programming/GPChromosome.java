@@ -110,16 +110,16 @@ public class GPChromosome implements Comparable{
     }
 
     private void mutateByRootGrowth() {
-        Function function = this.context.getRandomNonTerminalFunction();
-        Expression newRoot = new Expression(function);
-        newRoot.addChild(this.syntaxTree);
+        Function function = this.context.getRandomNonTerminalFunction(); // cria uma function não terminal aleatoria
+        Expression newRoot = new Expression(function); // transforma a function numa subarvore
+        newRoot.addChild(this.syntaxTree); // adiciona a raiz da arvore como filha da function
         for (int i = 1; i < function.argumentsCount(); i++) {
-            newRoot.addChild(SyntaxTreeUtils.createTree(0, this.context));
+            newRoot.addChild(SyntaxTreeUtils.createTree(0, this.context)); // se houver mais argumentos, preenche com nós terminais aleatórios
         }
         for (int i = 0; i < function.argumentsCount(); i++) {
-            newRoot.addCoefficient(this.context.getRandomValue());
+            newRoot.addCoefficient(this.context.getRandomValue()); // se houver coeficientes, adiciona aleatoriamente
         }
-        this.syntaxTree = newRoot;
+        this.syntaxTree = newRoot; // agora a function passa a ser a raiz da arvore
     }
 
     private void mutateByRandomChangeOfFunction() {
