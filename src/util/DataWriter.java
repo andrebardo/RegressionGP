@@ -24,14 +24,20 @@ public class DataWriter {
     public static void write(String filename,
             List<Double> bestFit,  List<Double> stdBestFit,
             List<Double> meanFit,  List<Double> stdMeanFit,
-            List<Double> worstFit, List<Double> stdWorstFit){
+            List<Double> worstFit, List<Double> stdWorstFit,
+            List<Double> repeated, List<Double> stdRepeated,
+            List<Double> lowerThan, List<Double> stdLower,
+            List<Double> higherThan, List<Double> stdHigher){
         ArrayList<String> buffer = new ArrayList<>();
-        buffer.add("Gen\t Best\t B_std_dev\t Mean\t M_std_dev\t Worst\t W_std_dev");
+        buffer.add("Gen\t Best\t B_std_dev\t Mean\t M_std_dev\t Worst\t W_std_dev\t Repeated\t R_std_dev\t Lower\t L_std_dev\t Higher\t H_std_dev");
         for(int i = 0; i < bestFit.size(); i++){
-            String line = String.format("%s\t %.4f\t %.4f\t %.4f\t %.4f\t %.4f\t %.4f", i,
+            String line = String.format("%s\t %.4f\t %.4f\t %.4f\t %.4f\t %.4f\t %.4f\t %.4f%%\t %.4f%%\t %.4f%%\t %.4f%%\t %.4f%%\t %.4f%%", i,
                     bestFit.get(i),  stdBestFit.get(i),
                     meanFit.get(i),  stdMeanFit.get(i),
-                    worstFit.get(i), stdBestFit.get(i));
+                    worstFit.get(i), stdWorstFit.get(i),
+                    repeated.get(i), stdRepeated.get(i),
+                    lowerThan.get(i),stdLower.get(i),
+                    higherThan.get(i), stdHigher.get(i));
             buffer.add(line);
         }
         

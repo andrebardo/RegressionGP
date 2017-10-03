@@ -6,14 +6,12 @@
 package genetic_programming;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.stream.IntStream;
 import syntax_tree.Context;
 import syntax_tree.Expression;
 import syntax_tree.SyntaxTreeUtils;
@@ -380,6 +378,30 @@ public class GeneticAlgorithm {
 
     public void setBestFit(double bestFit) {
         this.bestFit = bestFit;
+    }
+
+    public ArrayList<Double> getRepeatPerGen() {
+        return repeatPerGen;
+    }
+
+    public void setRepeatPerGen(ArrayList<Double> repeatPerGen) {
+        this.repeatPerGen = repeatPerGen;
+    }
+
+    public ArrayList<Double> getHighFitPercent() {
+        return highFitPercent;
+    }
+
+    public void setHighFitPercent(ArrayList<Double> highFitPercent) {
+        this.highFitPercent = highFitPercent;
+    }
+
+    public ArrayList<Double> getLowFitPercent() {
+        return lowFitPercent;
+    }
+
+    public void setLowFitPercent(ArrayList<Double> lowFitPercent) {
+        this.lowFitPercent = lowFitPercent;
     }
 
 }
